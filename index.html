@@ -35,8 +35,12 @@ body{
 }
 
 @keyframes float{
-    from{ transform:translateY(100vh); }
-    to{ transform:translateY(-100px); }
+    from{
+        transform:translateY(100vh);
+    }
+    to{
+        transform:translateY(-100px);
+    }
 }
 
 .card{
@@ -49,7 +53,6 @@ body{
     text-align:center;
     color:white;
     box-shadow:0 8px 32px rgba(0,0,0,0.2);
-    position:relative;
 }
 
 h1{
@@ -72,7 +75,7 @@ p{
 .buttons{
     margin-top:30px;
     position:relative;
-    height:220px;
+    height:180px;
 }
 
 button{
@@ -82,15 +85,12 @@ button{
     border-radius:50px;
     cursor:pointer;
     transition:.3s;
-    position:absolute;
 }
 
 #yesBtn{
     background:white;
     color:#ff4f81;
     font-weight:bold;
-    left:20%;
-    top:40px;
 }
 
 #yesBtn:hover{
@@ -100,23 +100,30 @@ button{
 #noBtn{
     background:#ff4f81;
     color:white;
-    left:60%;
-    top:40px;
+    position:absolute;
+    margin-left:20px;
 }
 
-/* mobile */
-@media (max-width:600px){
-    h1{ font-size:2.5rem; }
-    .question{ font-size:1.5rem; }
-    button{ font-size:1rem; padding:12px 25px; }
+.fadeIn{
+    animation:fadeIn 2s ease;
+}
+
+@keyframes fadeIn{
+    from{
+        opacity:0;
+        transform:translateY(20px);
+    }
+    to{
+        opacity:1;
+        transform:translateY(0);
+    }
 }
 
 </style>
 </head>
-
 <body>
 
-<div class="card">
+<div class="card fadeIn">
 
     <h1>To My Favorite Person ❤️</h1>
 
@@ -132,7 +139,7 @@ button{
     </p>
 
     <div class="question">
-        Will you be my girlfriend? 🌹
+        Sa akin ka lang? 🌹
     </div>
 
     <div class="buttons">
@@ -144,70 +151,72 @@ button{
 
 <script>
 
-// floating hearts
+// Create floating hearts
 for(let i=0;i<30;i++){
+
     let heart=document.createElement("div");
+
     heart.classList.add("heart");
+
     heart.innerHTML="❤";
+
     heart.style.left=Math.random()*100+"vw";
     heart.style.animationDuration=(Math.random()*5+5)+"s";
     heart.style.fontSize=(Math.random()*20+15)+"px";
+
     document.body.appendChild(heart);
 }
 
 const noBtn = document.getElementById("noBtn");
 const yesBtn = document.getElementById("yesBtn");
 
-let count = 0;
-
 const texts = [
     "NO 😭",
-    "Wait 🥺",
-    "Are you sure? 😳",
-    "Think again ❤️",
-    "You can't escape 😝",
-    "Just say YES 🥹"
+    "Are you sure? 🥺",
+    "Really? 😢",
+    "Think again 😭",
+    "Please? ❤️",
+    "You can't catch me 😝"
 ];
 
-// keep inside CARD area
-function moveNo(){
+let count = 0;
+
+const positions = [
+    { left: "60%", top: "0px" },
+    { left: "20%", top: "60px" },
+    { left: "75%", top: "90px" },
+    { left: "10%", top: "120px" },
+    { left: "65%", top: "140px" },
+    { left: "35%", top: "30px" },
+    { left: "80%", top: "40px" }
+];
+
+let posIndex = 0;
+
+noBtn.addEventListener("mouseover", () => {
+
+    posIndex = (posIndex + 1) % positions.length;
+
+    noBtn.style.left = positions[posIndex].left;
+    noBtn.style.top = positions[posIndex].top;
 
     count++;
-
-    const card = document.querySelector(".card");
-    const rect = card.getBoundingClientRect();
-
-    const maxX = rect.width - noBtn.offsetWidth;
-    const maxY = rect.height - noBtn.offsetHeight;
-
-    const x = Math.random() * maxX;
-    const y = Math.random() * maxY;
-
-    noBtn.style.left = x + "px";
-    noBtn.style.top = y + "px";
 
     if(count < texts.length){
         noBtn.innerHTML = texts[count];
     }
 
-    yesBtn.style.transform = `scale(${1 + count * 0.05})`;
-
-    if(count === 5){
-        document.querySelector(".question").innerHTML =
-        "You're really trying huh 😏❤️";
-    }
-}
-
-// desktop + mobile support
-noBtn.addEventListener("mouseover", moveNo);
-noBtn.addEventListener("touchstart", (e) => {
-    e.preventDefault();
-    moveNo();
+    yesBtn.style.transform =
+        `scale(${1 + count * 0.05})`;
 });
+
+noBtn.style.left = "60%";
+noBtn.style.top = "0px";
 
 yesBtn.addEventListener("click", () => {
 
     document.body.innerHTML = `
+
     <div style="
         height:100vh;
         display:flex;
@@ -228,16 +237,23 @@ yesBtn.addEventListener("click", () => {
         She Said YES! ❤️
         </h1>
 
-        <p style="max-width:700px;font-size:1.3rem;line-height:2;">
+        <p style="
+            max-width:700px;
+            font-size:1.3rem;
+            line-height:2;
+        ">
         Thank you for taking a chance on us.
-        I’d love to keep choosing you every day. ❤️
+        I know we're still learning about each other,
+        but I'd love to keep choosing you every day.
+        ❤️
         </p>
 
         <h2 style="margin-top:20px;">
-        Happy Birthday to me. 🎂🥹
+        Wala na bawian hahaha.🥹
         </h2>
 
     </div>
+
     `;
 });
 
