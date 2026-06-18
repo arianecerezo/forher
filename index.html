@@ -32,7 +32,7 @@ body{
     padding:20px;
 }
 
-/* 🎧 FULLSCREEN PLAY OVERLAY */
+/* OVERLAY */
 .overlay{
     position:fixed;
     top:0;
@@ -58,7 +58,7 @@ body{
     transform:scale(1.2);
 }
 
-/* Floating Hearts */
+/* HEARTS */
 .heart{
     position:absolute;
     color:white;
@@ -72,6 +72,7 @@ body{
     to{ transform:translateY(-100px); }
 }
 
+/* CARD */
 .card{
     width:90%;
     max-width:700px;
@@ -137,30 +138,13 @@ button{
     top:0;
 }
 
-/* fade */
-.fadeIn{
-    animation:fadeIn 2s ease;
-}
-
-@keyframes fadeIn{
-    from{opacity:0; transform:translateY(20px);}
-    to{opacity:1; transform:translateY(0);}
-}
-
-/* mobile */
 @media (max-width:768px){
     body{ overflow:auto; }
-
     .card{ width:95%; padding:25px; }
-
     h1{ font-size:2.5rem; }
-
     p{ font-size:1rem; }
-
     .question{ font-size:1.5rem; }
-
     .buttons{ height:200px; }
-
     button{ font-size:1rem; padding:12px 25px; }
 }
 
@@ -169,18 +153,21 @@ button{
 
 <body>
 
-<!-- 🎧 AUDIO -->
-<audio id="bgMusic" loop>
+<!-- AUDIO -->
+<audio id="bgMusic" loop preload="auto">
     <source src="i-pray-lany.mp3" type="audio/mpeg">
 </audio>
 
-<!-- ▶ PLAY OVERLAY (CENTERED) -->
+<audio id="yesMusic" preload="auto">
+    <source src="you-lany.mp3" type="audio/mpeg">
+</audio>
+
+<!-- OVERLAY -->
 <div class="overlay" id="overlay">
     <div class="play-btn" onclick="startExperience()">▶</div>
 </div>
 
-<div class="card fadeIn">
-
+<div class="card">
     <h1>To My Favorite Person ❤️</h1>
 
     <p>
@@ -188,7 +175,6 @@ button{
         but every day I spend talking to you
         makes me smile a little more.
         <br><br>
-
         You've become someone I genuinely look forward to.
         Someone who makes ordinary days feel special.
         Someone worth taking a chance on.
@@ -202,20 +188,51 @@ button{
         <button id="yesBtn">YES ❤️</button>
         <button id="noBtn">NO 😭</button>
     </div>
-
 </div>
 
 <script>
 
 const bgMusic = document.getElementById("bgMusic");
+const yesMusic = document.getElementById("yesMusic");
 const overlay = document.getElementById("overlay");
 
-function startExperience(){
-    bgMusic.play().catch(()=>{});
-    overlay.style.display = "none";
+let unlocked = false;
+
+/* ✅ AUDIO UNLOCK (IMPORTANT FIX FOR IPHONE/IPAD/CHROME) */
+function unlockAudio(){
+    if (unlocked) return;
+    unlocked = true;
+
+    bgMusic.play().then(()=>{
+        bgMusic.pause();
+        bgMusic.currentTime = 0;
+    }).catch(()=>{});
+
+    yesMusic.play().then(()=>{
+        yesMusic.pause();
+        yesMusic.currentTime = 0;
+    }).catch(()=>{});
 }
 
-// hearts
+/* START BUTTON */
+function startExperience(){
+    overlay.style.display = "none";
+
+    unlockAudio();
+
+    // START BACKGROUND MUSIC (I PRAY)
+    setTimeout(() => {
+        bgMusic.currentTime = 0;
+        bgMusic.play().catch(err => {
+            console.log("BG music blocked:", err);
+        });
+    }, 150);
+}
+
+/* backup unlock */
+document.body.addEventListener("click", unlockAudio, { once:true });
+
+/* HEARTS */
 const heartCount = window.innerWidth < 768 ? 15 : 30;
 
 for(let i=0;i<heartCount;i++){
@@ -230,6 +247,7 @@ for(let i=0;i<heartCount;i++){
     document.body.appendChild(heart);
 }
 
+/* BUTTON LOGIC */
 const noBtn = document.getElementById("noBtn");
 const yesBtn = document.getElementById("yesBtn");
 
@@ -241,10 +259,9 @@ const texts = [
     "Please? ❤️",
     "You can't catch me 😝",
     "Nice try! Bleeeee 😝",
-    "Bawal ang NOOOO! 😝"
+    "Bawal ang NOOOO! 😝",
+    "Di nga pwede, BEBEEEE! 😝"
 ];
-
-let count = 0;
 
 const positions = [
     { left: "60%", top: "0px" },
@@ -256,6 +273,7 @@ const positions = [
     { left: "80%", top: "40px" }
 ];
 
+let count = 0;
 let posIndex = 0;
 
 function moveNoButton(){
@@ -279,9 +297,18 @@ noBtn.addEventListener("touchstart", function(e){
     moveNoButton();
 });
 
+/* YES BUTTON */
 yesBtn.addEventListener("click", () => {
 
-    bgMusic.play();
+    bgMusic.pause();
+    bgMusic.currentTime = 0;
+
+    setTimeout(() => {
+        yesMusic.currentTime = 0;
+        yesMusic.play().catch(err => {
+            console.log("YES music blocked:", err);
+        });
+    }, 120);
 
     document.body.innerHTML = `
     <div style="
@@ -296,26 +323,18 @@ yesBtn.addEventListener("click", () => {
         background:linear-gradient(135deg,#ff758c,#ff7eb3,#ffb199);
         padding:30px;
     ">
-        <h1 style="
-            font-family:'Dancing Script';
-            font-size:5rem;
-        ">
-        She Said YES! ❤️
+        <h1 style="font-family:'Dancing Script'; font-size:5rem;">
+            She Said YES! ❤️
         </h1>
 
-        <p style="
-            max-width:700px;
-            font-size:1.3rem;
-            line-height:2;
-        ">
-        Thank you for taking a chance on us.
-        I know we're still learning about each other,
-        but I'd love to keep choosing you every day.
-        ❤️
+        <p style="max-width:700px; font-size:1.3rem; line-height:2;">
+            Thank you for taking a chance on us.
+            I know we're still learning about each other,
+            but I'd love to keep choosing you every day. ❤️
         </p>
 
         <h2 style="margin-top:20px;">
-        Wala na bawian hahaha.🥹
+            Wala na bawian hahaha.🥹
         </h2>
     </div>
     `;
